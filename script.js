@@ -86,7 +86,7 @@ function saveAsImage() {
     ctx.scale(scale, scale);
 
     // 設置canvas背景
-    ctx.fillStyle = '#D3D3D3'; // 更改背景色為 #D3D3D3
+    ctx.fillStyle = '#D2D2D2'; // 更改背景色為 #D2D2D2
     ctx.fillRect(0, 0, canvasSize, canvasSize);
 
     // 調整圓形位置以增加間距
