@@ -14,22 +14,23 @@ body {
     align-items: center;
     width: 100%;
     max-width: 800px;
+    padding: 20px;
 }
 
 .header {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
 }
 
 .header h1 {
-    font-size: 24px;
+    font-size: 32px;
     margin-bottom: 5px;
     color: white;
     font-weight: bold;
 }
 
 .header h2 {
-    font-size: 16px;
+    font-size: 20px;
     margin-top: 0;
     color: yellow;
     font-weight: normal;
@@ -37,25 +38,31 @@ body {
 
 .content {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 40px;
     width: 100%;
 }
 
 .selection-area {
-    width: 150px;
-    height: 150px;
+    width: 180px;
+    height: 180px;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    gap: 5px;
+    gap: 10px;
 }
 
 .selection-slot {
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     background-color: white;
     border: 2px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    font-weight: bold;
 }
 
 #slot-1 { grid-area: 2 / 2 / 3 / 3; }
@@ -67,13 +74,13 @@ body {
 .controls {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
 }
 
 .chess-board {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
+    gap: 8px;
 }
 
 .chess-piece {
@@ -125,6 +132,7 @@ body {
 .green-button {
     background-color: #4CAF50;
     color: white;
+    width: 100%;
 }
 
 #captureCanvas {
