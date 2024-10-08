@@ -11,10 +11,12 @@ const chessPieces = [
 
 const keyMapping = 'QWERTYUASDFGHJ';
 let selectedPieces = [];
-let remainingPieces = [...chessPieces];
+let remainingPieces = [];
 
 function initializeChessBoard() {
     const chessBoard = document.getElementById('chessBoard');
+    chessBoard.innerHTML = ''; // 清空棋盤
+    remainingPieces = JSON.parse(JSON.stringify(chessPieces)); // 深拷貝初始棋子狀態
     chessPieces.forEach((piece, index) => {
         const pieceElement = document.createElement('div');
         pieceElement.className = `chess-piece ${piece.color}-piece`;
@@ -28,11 +30,10 @@ function initializeChessBoard() {
 function selectPiece(index) {
     const piece = remainingPieces[index];
     if (piece && piece.limit > 0 && selectedPieces.length < 5) {
-        selectedPieces.push(piece);
+        selectedPieces.push({...piece});
         updateSelectionArea();
         piece.limit--;
         if (piece.limit === 0) {
-            remainingPieces[index] = null;
             document.querySelector(`.chess-piece[data-index="${index}"]`).style.visibility = 'hidden';
         }
     }
@@ -54,18 +55,15 @@ function updateSelectionArea() {
 
 function resetSelection() {
     selectedPieces = [];
-    remainingPieces = [...chessPieces];
+    initializeChessBoard(); // 重新初始化棋盤
     updateSelectionArea();
-    document.querySelectorAll('.chess-piece').forEach(element => {
-        element.style.visibility = 'visible';
-    });
 }
 
 function undoLastSelection() {
     if (selectedPieces.length > 0) {
         const lastPiece = selectedPieces.pop();
         const index = chessPieces.findIndex(p => p.name === lastPiece.name && p.color === lastPiece.color);
-        remainingPieces[index] = chessPieces[index];
+        remainingPieces[index].limit++;
         document.querySelector(`.chess-piece[data-index="${index}"]`).style.visibility = 'visible';
         updateSelectionArea();
     }
