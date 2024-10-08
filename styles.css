@@ -1,5 +1,5 @@
 body {
-    background-color: #D2D2D2;
+    background-color: #D3D3D3;
     margin: 0;
     font-family: "Microsoft YaHei", "微軟正黑體", Arial, sans-serif;
     display: flex;
@@ -20,11 +20,11 @@ body {
 .header {
     text-align: center;
     margin-bottom: 40px;
-    margin-top: -50px; /* 將標題往上移 */
+    margin-top: -50px;
 }
 
 .header h1 {
-    font-size: 38px; /* 增加標題大小 */
+    font-size: 38px;
     margin-bottom: 5px;
     font-weight: bold;
 }
@@ -40,7 +40,7 @@ body {
 .header h2 {
     font-size: 20px;
     margin-top: 0;
-    color: #f29c07; /* 更改小字顏色 */
+    color: #9304b0; /* 更改小字顏色為 #9304b0 */
     font-weight: normal;
 }
 
@@ -83,7 +83,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    width: 320px; /* 增加控制區寬度 */
+    width: 340px; /* 進一步增加控制區寬度 */
 }
 
 .chess-board {
@@ -144,7 +144,7 @@ body {
 }
 
 .green-button {
-    background-color: #4CAF50;
+    background-color: #3B6E98; /* 更改 "保存卦象" 按鈕顏色為 #3B6E98 */
     color: white;
     width: 100%;
 }
