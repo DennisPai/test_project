@@ -19,11 +19,12 @@ body {
 
 .header {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
+    margin-top: -50px; /* 將標題往上移 */
 }
 
 .header h1 {
-    font-size: 32px;
+    font-size: 38px; /* 增加標題大小 */
     margin-bottom: 5px;
     font-weight: bold;
 }
@@ -39,9 +40,8 @@ body {
 .header h2 {
     font-size: 20px;
     margin-top: 0;
-    color: yellow;
+    color: #f29c07; /* 更改小字顏色 */
     font-weight: normal;
-    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
 
 .content {
@@ -83,7 +83,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    width: 300px;
+    width: 320px; /* 增加控制區寬度 */
 }
 
 .chess-board {
