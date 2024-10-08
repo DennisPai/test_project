@@ -108,7 +108,7 @@ function saveAsImage() {
             
             // 繪製圓形背景
             ctx.beginPath();
-            ctx.arc(x, y, 40, 0, 2 * Math.PI);
+            ctx.arc(x, y, 45, 0, 2 * Math.PI);
             ctx.fillStyle = 'white';
             ctx.fill();
             ctx.strokeStyle = isRed ? 'red' : 'black';
