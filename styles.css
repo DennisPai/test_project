@@ -1,19 +1,25 @@
 body {
     background-color: #2b4b8c;
-    display: flex;
-    flex-direction: column; /* 改為縱向排列以容納標題 */
-    justify-content: flex-start; /* 從頂部開始排列 */
-    align-items: center;
-    min-height: 100vh;
     margin: 0;
     font-family: "Microsoft YaHei", "微軟正黑體", Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1000px;
 }
 
 .header {
     text-align: center;
     color: white;
     margin-bottom: 20px;
-    padding-top: 20px;
 }
 
 .header h1 {
@@ -27,9 +33,10 @@ body {
     margin-top: 0;
 }
 
-.container {
+.content {
     display: flex;
-    gap: 20px;
+    justify-content: space-between;
+    width: 100%;
 }
 
 .selection-area {
@@ -38,43 +45,32 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    background-color: transparent;
+    gap: 5px;
 }
 
 .selection-slot {
     width: 50px;
     height: 50px;
     border-radius: 50%;
+    background-color: white;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 30px;
     font-weight: bold;
     border: 2px solid;
-    background-color: white; /* 確保棋子背景為白色 */
 }
 
-/* 指定每個位置的網格區域，並設置為圓形 */
-#slot-1 { grid-area: 2 / 2 / 3 / 3; } /* 中央 */
-#slot-2 { grid-area: 2 / 1 / 3 / 2; } /* 左 */
-#slot-3 { grid-area: 2 / 3 / 3 / 4; } /* 右 */
-#slot-4 { grid-area: 1 / 2 / 2 / 3; } /* 上 */
-#slot-5 { grid-area: 3 / 2 / 4 / 3; } /* 下 */
+#slot-1 { grid-area: 2 / 2 / 3 / 3; }
+#slot-2 { grid-area: 2 / 1 / 3 / 2; }
+#slot-3 { grid-area: 2 / 3 / 3 / 4; }
+#slot-4 { grid-area: 1 / 2 / 2 / 3; }
+#slot-5 { grid-area: 3 / 2 / 4 / 3; }
 
-.red-piece { 
-    color: red; 
-    border-color: red;
-}
-
-.black-piece { 
-    color: black; 
-    border-color: black;
-}
-
-/* 其他樣式保持不變 */
 .controls {
     display: flex;
     flex-direction: column;
+    align-items: flex-end;
     gap: 10px;
 }
 
@@ -98,10 +94,30 @@ body {
     background-color: white;
 }
 
+.red-piece { 
+    color: red; 
+    border-color: red;
+}
+
+.black-piece { 
+    color: black; 
+    border-color: black;
+}
+
+.text-input {
+    width: 100%;
+    padding: 5px;
+    font-size: 16px;
+}
+
+.button-group {
+    display: flex;
+    gap: 5px;
+}
+
 .button {
     padding: 5px 10px;
     font-size: 16px;
-    font-weight: bold;
     cursor: pointer;
 }
 
@@ -109,17 +125,22 @@ body {
     background-color: #4CAF50;
     color: white;
     border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    border-radius: 5px;
+    padding: 10px 20px;
 }
 
 #captureCanvas {
     display: none;
 }
 
-@media (max-width: 600px) {
-    .container {
+@media (max-width: 768px) {
+    .content {
         flex-direction: column;
+        align-items: center;
+    }
+
+    .controls {
+        align-items: center;
+        margin-top: 20px;
     }
 }
