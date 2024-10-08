@@ -80,13 +80,13 @@ function saveAsImage() {
 
     // 保持高解析度
     const scale = 10;
-    const canvasSize = 500; // 增加畫布大小以容納文字
+    const canvasSize = 500;
     canvas.width = canvasSize * scale;
     canvas.height = canvasSize * scale;
     ctx.scale(scale, scale);
 
     // 設置canvas背景
-    ctx.fillStyle = '#2b4b8c';
+    ctx.fillStyle = '#D3D3D3'; // 更改背景色為 #D3D3D3
     ctx.fillRect(0, 0, canvasSize, canvasSize);
 
     // 調整圓形位置以增加間距
@@ -108,7 +108,7 @@ function saveAsImage() {
             
             // 繪製圓形背景
             ctx.beginPath();
-            ctx.arc(x, y, 45, 0, 2 * Math.PI);
+            ctx.arc(x, y, 40, 0, 2 * Math.PI);
             ctx.fillStyle = 'white';
             ctx.fill();
             ctx.strokeStyle = isRed ? 'red' : 'black';
@@ -131,16 +131,16 @@ function saveAsImage() {
     // 繪製輸入的文字
     if (inputText) {
         ctx.font = 'bold 35px "Microsoft YaHei", "微軟正黑體", sans-serif';
-        ctx.fillStyle = 'white';
+        ctx.fillStyle = 'black'; // 更改文字顏色為黑色
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
 
         // 文字換行處理
-        const maxWidth = 450; // 最大寬度
-        const lineHeight = 50; // 行高
+        const maxWidth = 450;
+        const lineHeight = 50;
         const words = inputText.split('');
         let line = '';
-        let y = 25; // 起始y座標調整為25
+        let y = 25;
 
         for (let n = 0; n < words.length; n++) {
             const testLine = line + words[n];
