@@ -15,8 +15,8 @@ let remainingPieces = [];
 
 function initializeChessBoard() {
     const chessBoard = document.getElementById('chessBoard');
-    chessBoard.innerHTML = '';
-    remainingPieces = JSON.parse(JSON.stringify(chessPieces));
+    chessBoard.innerHTML = ''; // 清空棋盤
+    remainingPieces = JSON.parse(JSON.stringify(chessPieces)); // 深拷貝初始棋子狀態
     chessPieces.forEach((piece, index) => {
         const pieceElement = document.createElement('div');
         pieceElement.className = `chess-piece ${piece.color}-piece`;
@@ -55,7 +55,7 @@ function updateSelectionArea() {
 
 function resetSelection() {
     selectedPieces = [];
-    initializeChessBoard();
+    initializeChessBoard(); // 重新初始化棋盤
     updateSelectionArea();
 }
 
@@ -79,28 +79,27 @@ function saveAsImage() {
     const ctx = canvas.getContext('2d');
 
     // 保持高解析度
-    const scale = window.devicePixelRatio || 1;
-    const canvasSize = Math.min(500, window.innerWidth - 40);
+    const scale = 10;
+    const canvasSize = 500;
     canvas.width = canvasSize * scale;
     canvas.height = canvasSize * scale;
     ctx.scale(scale, scale);
 
     // 設置canvas背景
-    ctx.fillStyle = '#D2D2D2';
+    ctx.fillStyle = '#D2D2D2'; // 更改背景色為 #D2D2D2
     ctx.fillRect(0, 0, canvasSize, canvasSize);
 
     // 調整圓形位置以增加間距
     const positions = [
-        {x: canvasSize/2, y: canvasSize*0.6},  // 中
-        {x: canvasSize*0.26, y: canvasSize*0.6},  // 左
-        {x: canvasSize*0.74, y: canvasSize*0.6},  // 右
-        {x: canvasSize/2, y: canvasSize*0.36},  // 上
-        {x: canvasSize/2, y: canvasSize*0.84}   // 下
+        {x: 250, y: 300},  // 中
+        {x: 130, y: 300},  // 左
+        {x: 370, y: 300},  // 右
+        {x: 250, y: 180},  // 上
+        {x: 250, y: 420}   // 下
     ];
 
     // 繪製棋子
     const slots = [1, 2, 3, 4, 5];
-    const circleRadius = canvasSize * 0.09;
     slots.forEach((slot, index) => {
         const slotElement = document.getElementById(`slot-${slot}`);
         if (slotElement && slotElement.textContent) {
@@ -109,7 +108,7 @@ function saveAsImage() {
             
             // 繪製圓形背景
             ctx.beginPath();
-            ctx.arc(x, y, circleRadius, 0, 2 * Math.PI);
+            ctx.arc(x, y, 45, 0, 2 * Math.PI);
             ctx.fillStyle = 'white';
             ctx.fill();
             ctx.strokeStyle = isRed ? 'red' : 'black';
@@ -117,7 +116,7 @@ function saveAsImage() {
             ctx.stroke();
 
             // 繪製文字
-            ctx.font = `bold ${canvasSize*0.1}px "Microsoft YaHei", "微軟正黑體", sans-serif`;
+            ctx.font = 'bold 50px "Microsoft YaHei", "微軟正黑體", sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = isRed ? 'red' : 'black';
@@ -131,17 +130,17 @@ function saveAsImage() {
 
     // 繪製輸入的文字
     if (inputText) {
-        ctx.font = `bold ${canvasSize*0.07}px "Microsoft YaHei", "微軟正黑體", sans-serif`;
-        ctx.fillStyle = 'black';
+        ctx.font = 'bold 35px "Microsoft YaHei", "微軟正黑體", sans-serif';
+        ctx.fillStyle = 'black'; // 更改文字顏色為黑色
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
 
         // 文字換行處理
-        const maxWidth = canvasSize * 0.9;
-        const lineHeight = canvasSize * 0.1;
+        const maxWidth = 450;
+        const lineHeight = 50;
         const words = inputText.split('');
         let line = '';
-        let y = canvasSize * 0.05;
+        let y = 25;
 
         for (let n = 0; n < words.length; n++) {
             const testLine = line + words[n];
@@ -159,40 +158,19 @@ function saveAsImage() {
         ctx.fillText(line, canvasSize / 2, y);
     }
 
-    // 創建下載連結或直接顯示圖片
-    canvas.toBlob(function(blob) {
-        if (blob) {
-            const url = URL.createObjectURL(blob);
-            const fileName = inputText || '象棋選擇';
-            
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `${fileName}.png`;
-            link.style.display = 'none';
-            document.body.appendChild(link);
-            
-            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                // 移動設備
-                if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                    // iOS設備：在新標籤頁中打開圖片
-                    window.open(url, '_blank');
-                } else {
-                    // 其他移動設備：觸發下載
-                    link.click();
-                }
-            } else {
-                // 桌面設備：觸發下載
-                link.click();
-            }
-            
-            document.body.removeChild(link);
-            
-            // 清理創建的URL對象
-            setTimeout(() => URL.revokeObjectURL(url), 100);
-        } else {
-            console.error('無法創建Blob對象');
-        }
-    }, 'image/png');
+    // 創建下載連結
+    try {
+        const dataUrl = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = inputText ? `${inputText}.png` : '象棋選擇.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        console.log('圖片已成功創建並觸發下載');
+    } catch (error) {
+        console.error('創建或下載圖片時出錯:', error);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -217,18 +195,4 @@ document.addEventListener('DOMContentLoaded', function() {
             selectPiece(index);
         }
     });
-
-    // 添加觸摸事件支持
-    const chessBoard = document.getElementById('chessBoard');
-    if (chessBoard) {
-        chessBoard.addEventListener('touchstart', function(e) {
-            e.preventDefault(); // 防止觸摸事件的默認行為
-            const touch = e.touches[0];
-            const element = document.elementFromPoint(touch.clientX, touch.clientY);
-            if (element && element.classList.contains('chess-piece')) {
-                const index = parseInt(element.dataset.index);
-                selectPiece(index);
-            }
-        }, false);
-    }
 });

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,11 +8,10 @@
 </head>
 <body>
     <div class="main-container">
-        <header class="header">
+        <div class="header">
             <h1><span class="title-part1">命運鍛造所FateForge - </span><span class="title-part2">排卦小工具（單卦）</span></h1>
             <h2>Beta測試版</h2>
-        </header>
-
+        </div>
         <div class="content">
             <div class="selection-area">
                 <div id="slot-4" class="selection-slot"></div>
@@ -21,22 +20,18 @@
                 <div id="slot-3" class="selection-slot"></div>
                 <div id="slot-5" class="selection-slot"></div>
             </div>
-
             <div class="controls">
                 <div id="chessBoard" class="chess-board"></div>
-
+                <input type="text" id="textInput" placeholder="在此輸入單卦問題" class="text-input">
                 <div class="button-group">
                     <button id="undoBtn" class="button">上一步</button>
                     <button id="resetBtn" class="button">重置</button>
                 </div>
-
-                <input type="text" id="textInput" class="text-input" placeholder="輸入文字...">
                 <button id="saveBtn" class="button green-button">保存卦象</button>
             </div>
         </div>
     </div>
-
-    <canvas id="captureCanvas" style="display:none;"></canvas>
+    <canvas id="captureCanvas"></canvas>
     <script src="script.js"></script>
 </body>
 </html>

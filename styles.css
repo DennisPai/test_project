@@ -20,6 +20,7 @@ body {
 .header {
     text-align: center;
     margin-bottom: 40px;
+    margin-top: -50px;
 }
 
 .header h1 {
@@ -39,7 +40,7 @@ body {
 .header h2 {
     font-size: 20px;
     margin-top: 0;
-    color: #9304b0;
+    color: #9304b0; /* 更改小字顏色為 #9304b0 */
     font-weight: normal;
 }
 
@@ -82,7 +83,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    width: 340px;
+    width: 340px; /* 進一步增加控制區寬度 */
 }
 
 .chess-board {
@@ -143,7 +144,7 @@ body {
 }
 
 .green-button {
-    background-color: #3B6E98;
+    background-color: #3B6E98; /* 更改 "保存卦象" 按鈕顏色為 #3B6E98 */
     color: white;
     width: 100%;
 }
@@ -153,52 +154,13 @@ body {
 }
 
 @media (max-width: 768px) {
-    .main-container {
-        padding: 10px;
-    }
-
-    .header h1 {
-        font-size: 28px;
-    }
-
-    .header h2 {
-        font-size: 16px;
-    }
-
     .content {
         flex-direction: column;
         align-items: center;
-        gap: 20px;
-    }
-
-    .selection-area {
-        width: 240px;
-        height: 240px;
-    }
-
-    .selection-slot {
-        width: 60px;
-        height: 60px;
-        font-size: 36px;
     }
 
     .controls {
+        margin-top: 20px;
         width: 100%;
-        max-width: 340px;
-    }
-
-    .chess-board {
-        grid-template-columns: repeat(5, 1fr);
-    }
-
-    .chess-piece {
-        width: 36px;
-        height: 36px;
-        font-size: 18px;
-    }
-
-    .button {
-        padding: 8px 16px;
-        font-size: 14px;
     }
 }
