@@ -159,47 +159,40 @@ function saveAsImage() {
         ctx.fillText(line, canvasSize / 2, y);
     }
 
-    // 獲取文件名
-    const fileName = inputText || '象棋選擇';
-
-    // 檢測設備類型
-    const isAndroid = /Android/i.test(navigator.userAgent);
-    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    const isDesktop = !isAndroid && !isIOS;
-
-    if (isDesktop) {
-        // 桌面版：直接使用 canvas.toDataURL 和 download 屬性
-        const link = document.createElement('a');
-        link.download = `${fileName}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-    } else {
-        // 移動設備：使用 Blob 和 URL.createObjectURL
-        canvas.toBlob(function(blob) {
-            if (blob) {
-                const url = URL.createObjectURL(blob);
-                
-                if (isAndroid) {
-                    // Android 設備
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = `${fileName}.png`;
-                    link.style.display = 'none';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                } else if (isIOS) {
-                    // iOS 設備
+    // 創建下載連結或直接顯示圖片
+    canvas.toBlob(function(blob) {
+        if (blob) {
+            const url = URL.createObjectURL(blob);
+            const fileName = inputText || '象棋選擇';
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${fileName}.png`;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                // 移動設備
+                if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                    // iOS設備：在新標籤頁中打開圖片
                     window.open(url, '_blank');
+                } else {
+                    // 其他移動設備：觸發下載
+                    link.click();
                 }
-                
-                // 清理創建的 URL 對象
-                setTimeout(() => URL.revokeObjectURL(url), 100);
             } else {
-                console.error('無法創建 Blob 對象');
+                // 桌面設備：觸發下載
+                link.click();
             }
-        }, 'image/png');
-    }
+            
+            document.body.removeChild(link);
+            
+            // 清理創建的URL對象
+            setTimeout(() => URL.revokeObjectURL(url), 100);
+        } else {
+            console.error('無法創建Blob對象');
+        }
+    }, 'image/png');
 }
 
 document.addEventListener('DOMContentLoaded', function() {
