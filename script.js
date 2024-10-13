@@ -159,19 +159,28 @@ function saveAsImage() {
         ctx.fillText(line, canvasSize / 2, y);
     }
 
-    // 創建下載連結或直接顯示圖片
-    canvas.toBlob(function(blob) {
-        if (blob) {
-            const url = URL.createObjectURL(blob);
-            const fileName = inputText || '象棋選擇';
-            
-            const isAndroid = /Android/i.test(navigator.userAgent);
-            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-            const isMobile = isAndroid || isIOS;
+    // 獲取文件名
+    const fileName = inputText || '象棋選擇';
 
-            if (isMobile) {
+    // 檢測設備類型
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const isDesktop = !isAndroid && !isIOS;
+
+    if (isDesktop) {
+        // 桌面版：直接使用 canvas.toDataURL 和 download 屬性
+        const link = document.createElement('a');
+        link.download = `${fileName}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    } else {
+        // 移動設備：使用 Blob 和 URL.createObjectURL
+        canvas.toBlob(function(blob) {
+            if (blob) {
+                const url = URL.createObjectURL(blob);
+                
                 if (isAndroid) {
-                    // 對於Android設備，創建一個隱藏的下載鏈接並觸發點擊
+                    // Android 設備
                     const link = document.createElement('a');
                     link.href = url;
                     link.download = `${fileName}.png`;
@@ -179,30 +188,18 @@ function saveAsImage() {
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-                } else {
-                    // 對於iOS設備，在新標籤頁中打開圖片
+                } else if (isIOS) {
+                    // iOS 設備
                     window.open(url, '_blank');
                 }
+                
+                // 清理創建的 URL 對象
+                setTimeout(() => URL.revokeObjectURL(url), 100);
             } else {
-                // 對於桌面設備，使用常規下載方法
-                console.log('正在觸發桌面設備下載');
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `${fileName}.png`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                console.error('無法創建 Blob 對象');
             }
-            
-            // 清理創建的URL對象
-            setTimeout(() => {
-                URL.revokeObjectURL(url);
-                console.log('URL對象已清理');
-            }, 100);
-        } else {
-            console.error('無法創建Blob對象');
-        }
-    }, 'image/png');
+        }, 'image/png');
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
