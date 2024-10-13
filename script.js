@@ -158,18 +158,31 @@ function saveAsImage() {
         ctx.fillText(line, canvasSize / 2, y);
     }
 
-    // 創建下載連結
-    try {
-        const dataUrl = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.href = dataUrl;
-        link.download = inputText ? `${inputText}.png` : '象棋選擇.png';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        console.log('圖片已成功創建並觸發下載');
-    } catch (error) {
-        console.error('創建或下載圖片時出錯:', error);
+    // 根據設備類型選擇適當的下載方法
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        // 行動裝置：使用 Blob 和 URL.createObjectURL
+        canvas.toBlob(function(blob) {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = inputText ? `${inputText}.png` : '象棋選擇.png';
+            link.click();
+            URL.revokeObjectURL(url);
+        }, 'image/png');
+    } else {
+        // 桌面裝置：使用原有的 dataURL 方法
+        try {
+            const dataUrl = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = inputText ? `${inputText}.png` : '象棋選擇.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            console.log('圖片已成功創建並觸發下載');
+        } catch (error) {
+            console.error('創建或下載圖片時出錯:', error);
+        }
     }
 }
 
