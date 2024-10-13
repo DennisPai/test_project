@@ -84,7 +84,7 @@ function saveAsImage() {
     canvas.width = canvasSize * scale;
     canvas.height = canvasSize * scale;
     ctx.scale(scale, scale);
-
+    
     // 設置canvas背景
     ctx.fillStyle = '#D2D2D2';
     ctx.fillRect(0, 0, canvasSize, canvasSize);
@@ -161,24 +161,38 @@ function saveAsImage() {
     }
 
     // 創建下載連結或直接顯示圖片
-    try {
-        const dataUrl = canvas.toDataURL('image/png');
-        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-            // 移動設備：直接在新標籤頁中打開圖片
-            window.open(dataUrl, '_blank');
+    canvas.toBlob(function(blob) {
+        if (blob) {
+            const url = URL.createObjectURL(blob);
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            const fileName = document.getElementById('textInput').value.trim() || '象棋選擇';
+            
+            if (isAndroid) {
+                // 對於Android設備，創建一個隱藏的下載鏈接並觸發點擊
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `${fileName}.png`;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                // 對於iOS設備，在新標籤頁中打開圖片
+                window.open(url, '_blank');
+            } else {
+                // 對於桌面設備，使用常規下載方法
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `${fileName}.png`;
+                link.click();
+            }
+            
+            // 清理創建的URL對象
+            setTimeout(() => URL.revokeObjectURL(url), 100);
         } else {
-            // 桌面設備：創建下載連結
-            const link = document.createElement('a');
-            link.href = dataUrl;
-            link.download = inputText ? `${inputText}.png` : '象棋選擇.png';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            console.error('無法創建Blob對象');
         }
-        console.log('圖片已成功創建並觸發下載或顯示');
-    } catch (error) {
-        console.error('創建或下載圖片時出錯:', error);
-    }
+    }, 'image/png');
 }
 
 document.addEventListener('DOMContentLoaded', function() {
