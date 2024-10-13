@@ -160,12 +160,22 @@ body {
 
     .header h1 {
         font-size: 24px;
+        white-space: normal; /* 允許在行動裝置上換行 */
+    }
+
+    .header h1 .title-part1,
+    .header h1 .title-part2 {
+        display: block; /* 讓兩部分標題分行顯示 */
+    }
+
+    .header h1 .title-part2::before {
+        content: ''; /* 移除行動裝置版本的破折號 */
     }
 
     .header h2 {
         font-size: 16px;
     }
-
+    
     .content {
         flex-direction: column;
         align-items: center;
