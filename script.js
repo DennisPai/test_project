@@ -163,33 +163,40 @@ function saveAsImage() {
     canvas.toBlob(function(blob) {
         if (blob) {
             const url = URL.createObjectURL(blob);
-            const isAndroid = /Android/i.test(navigator.userAgent);
             const fileName = inputText || '象棋選擇';
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
             
-            if (isAndroid) {
-                // 對於Android設備，創建一個隱藏的下載鏈接並觸發點擊
+            if (isAndroid || isIOS) {
+                // 移動設備：在新標籤頁中打開圖片
+                window.open(url, '_blank');
+            } else {
+                // 桌面設備：使用 download 屬性觸發下載
                 const link = document.createElement('a');
                 link.href = url;
                 link.download = `${fileName}.png`;
                 link.style.display = 'none';
                 document.body.appendChild(link);
-                link.click();
+                
+                try {
+                    link.click();
+                    console.log('下載鏈接已點擊');
+                } catch (error) {
+                    console.error('無法觸發下載:', error);
+                    alert('下載失敗，請再試一次或使用不同的瀏覽器。');
+                }
+                
                 document.body.removeChild(link);
-            } else if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                // 對於iOS設備，在新標籤頁中打開圖片
-                window.open(url, '_blank');
-            } else {
-                // 對於桌面設備，使用常規下載方法
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `${fileName}.png`;
-                link.click();
             }
             
             // 清理創建的URL對象
-            setTimeout(() => URL.revokeObjectURL(url), 100);
+            setTimeout(() => {
+                URL.revokeObjectURL(url);
+                console.log('URL 對象已清理');
+            }, 100);
         } else {
             console.error('無法創建Blob對象');
+            alert('生成圖片失敗，請再試一次。');
         }
     }, 'image/png');
 }
