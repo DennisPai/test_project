@@ -10,13 +10,44 @@ const chessPieces = [
 ];
 
 const keyMapping = 'QWERTYUASDFGHJ';
-let selectedPieces = [];
+let selectedPieces = [[], [], []]; // 為每個十字圖形準備一個陣列
 let remainingPieces = [];
+let currentPatternIndex = 0; // 當前正在填充的圖形索引
+
+function createCrossPattern(index) {
+    const selectionArea = document.createElement('div');
+    selectionArea.className = 'selection-area';
+    selectionArea.dataset.patternIndex = index;
+
+    // 創建5個槽位
+    for (let i = 1; i <= 5; i++) {
+        const slot = document.createElement('div');
+        slot.id = `slot-${i}-pattern-${index}`;
+        slot.className = 'selection-slot';
+        selectionArea.appendChild(slot);
+    }
+
+    return selectionArea;
+}
+
+function updateCrossPatterns() {
+    const container = document.getElementById('crossPatternsContainer');
+    container.innerHTML = '';
+    const count = parseInt(document.getElementById('hexagramCount').value);
+    
+    for (let i = 0; i < count; i++) {
+        container.appendChild(createCrossPattern(i));
+    }
+    updateSelectionArea();
+}
 
 function initializeChessBoard() {
     const chessBoard = document.getElementById('chessBoard');
-    chessBoard.innerHTML = ''; // 清空棋盤
-    remainingPieces = JSON.parse(JSON.stringify(chessPieces)); // 深拷貝初始棋子狀態
+    chessBoard.innerHTML = '';
+    remainingPieces = JSON.parse(JSON.stringify(chessPieces));
+    selectedPieces = Array(3).fill().map(() => []); // 重置所有圖形的選擇
+    currentPatternIndex = 0;
+
     chessPieces.forEach((piece, index) => {
         const pieceElement = document.createElement('div');
         pieceElement.className = `chess-piece ${piece.color}-piece`;
@@ -25,118 +56,145 @@ function initializeChessBoard() {
         pieceElement.onclick = () => selectPiece(index);
         chessBoard.appendChild(pieceElement);
     });
+
+    updateCrossPatterns();
 }
 
 function selectPiece(index) {
     const piece = remainingPieces[index];
-    if (piece && piece.limit > 0 && selectedPieces.length < 5) {
-        selectedPieces.push({...piece});
-        updateSelectionArea();
-        piece.limit--;
-        if (piece.limit === 0) {
-            document.querySelector(`.chess-piece[data-index="${index}"]`).style.visibility = 'hidden';
+    const hexagramCount = parseInt(document.getElementById('hexagramCount').value);
+
+    if (piece && piece.limit > 0) {
+        // 找到當前應該填充的圖形
+        while (currentPatternIndex < hexagramCount && selectedPieces[currentPatternIndex].length >= 5) {
+            currentPatternIndex++;
+        }
+
+        if (currentPatternIndex < hexagramCount) {
+            selectedPieces[currentPatternIndex].push({...piece});
+            updateSelectionArea();
+            piece.limit--;
+            if (piece.limit === 0) {
+                document.querySelector(`.chess-piece[data-index="${index}"]`).style.visibility = 'hidden';
+            }
         }
     }
 }
 
 function updateSelectionArea() {
-    const slots = [1, 2, 3, 4, 5];
-    slots.forEach((slot, index) => {
-        const slotElement = document.getElementById(`slot-${slot}`);
-        if (selectedPieces[index]) {
-            slotElement.textContent = selectedPieces[index].name;
-            slotElement.className = `selection-slot ${selectedPieces[index].color}-piece`;
-        } else {
-            slotElement.textContent = '';
-            slotElement.className = 'selection-slot';
+    const hexagramCount = parseInt(document.getElementById('hexagramCount').value);
+    
+    for (let patternIndex = 0; patternIndex < hexagramCount; patternIndex++) {
+        const pattern = selectedPieces[patternIndex];
+        for (let slot = 1; slot <= 5; slot++) {
+            const slotElement = document.getElementById(`slot-${slot}-pattern-${patternIndex}`);
+            if (slotElement) {
+                if (pattern[slot - 1]) {
+                    slotElement.textContent = pattern[slot - 1].name;
+                    slotElement.className = `selection-slot ${pattern[slot - 1].color}-piece`;
+                } else {
+                    slotElement.textContent = '';
+                    slotElement.className = 'selection-slot';
+                }
+            }
         }
-    });
+    }
 }
 
 function resetSelection() {
-    selectedPieces = [];
-    initializeChessBoard(); // 重新初始化棋盤
-    updateSelectionArea();
+    selectedPieces = Array(3).fill().map(() => []);
+    currentPatternIndex = 0;
+    initializeChessBoard();
 }
 
 function undoLastSelection() {
-    if (selectedPieces.length > 0) {
-        const lastPiece = selectedPieces.pop();
-        const index = chessPieces.findIndex(p => p.name === lastPiece.name && p.color === lastPiece.color);
-        remainingPieces[index].limit++;
-        document.querySelector(`.chess-piece[data-index="${index}"]`).style.visibility = 'visible';
-        updateSelectionArea();
+    // 從最後一個有選擇的圖形開始撤銷
+    for (let i = 2; i >= 0; i--) {
+        if (selectedPieces[i].length > 0) {
+            const lastPiece = selectedPieces[i].pop();
+            const index = chessPieces.findIndex(p => p.name === lastPiece.name && p.color === lastPiece.color);
+            remainingPieces[index].limit++;
+            document.querySelector(`.chess-piece[data-index="${index}"]`).style.visibility = 'visible';
+            
+            // 更新當前圖形索引
+            if (i === currentPatternIndex && selectedPieces[i].length === 4) {
+                // 如果撤銷的是當前圖形的最後一個位置，不需要改變currentPatternIndex
+            } else {
+                currentPatternIndex = Math.min(i, currentPatternIndex);
+            }
+            break;
+        }
     }
+    updateSelectionArea();
 }
 
 function saveAsImage() {
-    console.log('開始保存圖片');
     const canvas = document.getElementById('captureCanvas');
-    if (!canvas) {
-        console.error('未找到canvas元素');
-        return;
-    }
+    if (!canvas) return;
+    
     const ctx = canvas.getContext('2d');
-
-    // 保持高解析度
+    const hexagramCount = parseInt(document.getElementById('hexagramCount').value);
+    
+    // 調整canvas大小以適應多個圖形
     const scale = 10;
-    const canvasSize = 500;
-    canvas.width = canvasSize * scale;
-    canvas.height = canvasSize * scale;
+    const singleWidth = 500;
+    const height = 500;
+    canvas.width = singleWidth * hexagramCount * scale;
+    canvas.height = height * scale;
     ctx.scale(scale, scale);
-
+    
     // 設置canvas背景
-    ctx.fillStyle = '#D2D2D2'; // 更改背景色為 #D2D2D2
-    ctx.fillRect(0, 0, canvasSize, canvasSize);
+    ctx.fillStyle = '#D2D2D2';
+    ctx.fillRect(0, 0, singleWidth * hexagramCount, height);
+    
+    // 為每個圖形定義位置
+    const patterns = [];
+    for (let i = 0; i < hexagramCount; i++) {
+        patterns.push([
+            {x: 250 + (i * singleWidth), y: 300},  // 中
+            {x: 130 + (i * singleWidth), y: 300},  // 左
+            {x: 370 + (i * singleWidth), y: 300},  // 右
+            {x: 250 + (i * singleWidth), y: 180},  // 上
+            {x: 250 + (i * singleWidth), y: 420}   // 下
+        ]);
+    }
+    
+    // 繪製每個圖形
+    for (let patternIndex = 0; patternIndex < hexagramCount; patternIndex++) {
+        const pattern = selectedPieces[patternIndex];
+        pattern.forEach((piece, slotIndex) => {
+            if (piece) {
+                const {x, y} = patterns[patternIndex][slotIndex];
+                
+                // 繪製圓形背景
+                ctx.beginPath();
+                ctx.arc(x, y, 45, 0, 2 * Math.PI);
+                ctx.fillStyle = 'white';
+                ctx.fill();
+                ctx.strokeStyle = piece.color;
+                ctx.lineWidth = 3;
+                ctx.stroke();
 
-    // 調整圓形位置以增加間距
-    const positions = [
-        {x: 250, y: 300},  // 中
-        {x: 130, y: 300},  // 左
-        {x: 370, y: 300},  // 右
-        {x: 250, y: 180},  // 上
-        {x: 250, y: 420}   // 下
-    ];
+                // 繪製文字
+                ctx.font = 'bold 50px "Microsoft YaHei", "微軟正黑體", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = piece.color;
+                ctx.fillText(piece.name, x, y + 3);
+            }
+        });
+    }
 
-    // 繪製棋子
-    const slots = [1, 2, 3, 4, 5];
-    slots.forEach((slot, index) => {
-        const slotElement = document.getElementById(`slot-${slot}`);
-        if (slotElement && slotElement.textContent) {
-            const {x, y} = positions[index];
-            const isRed = slotElement.classList.contains('red-piece');
-            
-            // 繪製圓形背景
-            ctx.beginPath();
-            ctx.arc(x, y, 45, 0, 2 * Math.PI);
-            ctx.fillStyle = 'white';
-            ctx.fill();
-            ctx.strokeStyle = isRed ? 'red' : 'black';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-
-            // 繪製文字
-            ctx.font = 'bold 50px "Microsoft YaHei", "微軟正黑體", sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillStyle = isRed ? 'red' : 'black';
-            
-            ctx.fillText(slotElement.textContent, x, y+3);
-        }
-    });
-
-    // 獲取輸入的文字
+    // 獲取並繪製輸入的文字
     const inputText = document.getElementById('textInput').value.trim();
-
-    // 繪製輸入的文字
     if (inputText) {
         ctx.font = 'bold 35px "Microsoft YaHei", "微軟正黑體", sans-serif';
-        ctx.fillStyle = 'black'; // 更改文字顏色為黑色
+        ctx.fillStyle = 'black';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
 
         // 文字換行處理
-        const maxWidth = 450;
+        const maxWidth = 450 * hexagramCount; // 根據圖形數量調整最大寬度
         const lineHeight = 50;
         const words = inputText.split('');
         let line = '';
@@ -147,20 +205,18 @@ function saveAsImage() {
             const metrics = ctx.measureText(testLine);
             const testWidth = metrics.width;
             if (testWidth > maxWidth && n > 0) {
-                ctx.fillText(line, canvasSize / 2, y);
+                ctx.fillText(line, (singleWidth * hexagramCount) / 2, y);
                 line = words[n];
                 y += lineHeight;
-            }
-            else {
+            } else {
                 line = testLine;
             }
         }
-        ctx.fillText(line, canvasSize / 2, y);
+        ctx.fillText(line, (singleWidth * hexagramCount) / 2, y);
     }
 
     // 根據設備類型選擇適當的下載方法
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        // 行動裝置：使用 Blob 和 URL.createObjectURL
         canvas.toBlob(function(blob) {
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
@@ -170,7 +226,6 @@ function saveAsImage() {
             URL.revokeObjectURL(url);
         }, 'image/png');
     } else {
-        // 桌面裝置：使用原有的 dataURL 方法
         try {
             const dataUrl = canvas.toDataURL('image/png');
             const link = document.createElement('a');
@@ -179,7 +234,6 @@ function saveAsImage() {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            console.log('圖片已成功創建並觸發下載');
         } catch (error) {
             console.error('創建或下載圖片時出錯:', error);
         }
@@ -191,15 +245,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     document.getElementById('resetBtn').onclick = resetSelection;
     document.getElementById('undoBtn').onclick = undoLastSelection;
+    document.getElementById('hexagramCount').onchange = function() {
+        resetSelection();
+    };
     
     const saveBtn = document.getElementById('saveBtn');
     if (saveBtn) {
-        saveBtn.onclick = function() {
-            console.log('保存按鈕被點擊');
-            saveAsImage();
-        };
-    } else {
-        console.error('未找到保存按鈕');
+        saveBtn.onclick = saveAsImage;
     }
     
     document.addEventListener('keydown', (event) => {
