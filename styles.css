@@ -13,7 +13,7 @@ body {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    max-width: 800px;
+    max-width: 1200px;
     padding: 20px;
     box-sizing: border-box;
 }
@@ -44,10 +44,11 @@ body {
     font-weight: normal;
 }
 
-.content {
+.cross-patterns-container {
     display: flex;
     justify-content: center;
     gap: 40px;
+    margin-bottom: 40px;
     width: 100%;
 }
 
@@ -80,16 +81,18 @@ body {
 #slot-5 { grid-area: 3 / 2 / 4 / 3; }
 
 .controls {
+    width: 100%;
+    max-width: 600px;
     display: flex;
     flex-direction: column;
     gap: 15px;
-    width: 340px;
 }
 
 .chess-board {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 8px;
+    justify-content: center;
 }
 
 .chess-piece {
@@ -125,9 +128,10 @@ body {
     box-sizing: border-box;
 }
 
-.button-group {
+.button-row {
     display: flex;
     gap: 10px;
+    align-items: center;
 }
 
 .button {
@@ -137,10 +141,17 @@ body {
     border: none;
     border-radius: 5px;
     background-color: #f0f0f0;
+    flex: 1;
 }
 
-.button-group .button {
-    flex: 1;
+.hexagram-select {
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    width: 120px;
 }
 
 .green-button {
@@ -160,23 +171,13 @@ body {
 
     .header h1 {
         font-size: 24px;
-        white-space: normal; /* 允許在行動裝置上換行 */
-    }
-
-    .header h1 .title-part1,
-    .header h1 .title-part2 {
-        display: block; /* 讓兩部分標題分行顯示 */
-    }
-
-    .header h1 .title-part2::before {
-        content: ''; /* 移除行動裝置版本的破折號 */
     }
 
     .header h2 {
         font-size: 16px;
     }
-    
-    .content {
+
+    .cross-patterns-container {
         flex-direction: column;
         align-items: center;
         gap: 20px;
@@ -193,10 +194,6 @@ body {
         font-size: 35px;
     }
 
-    .controls {
-        width: 100%;
-    }
-
     .chess-board {
         grid-template-columns: repeat(5, 1fr);
     }
@@ -205,5 +202,13 @@ body {
         width: 35px;
         height: 35px;
         font-size: 18px;
+    }
+
+    .button-row {
+        flex-wrap: wrap;
+    }
+
+    .hexagram-select {
+        width: 100%;
     }
 }
