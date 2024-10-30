@@ -151,11 +151,11 @@ function saveAsImage() {
     const patterns = [];
     for (let i = 0; i < hexagramCount; i++) {
         patterns.push([
-            {x: 250 + (i * singleWidth), y: 300},  // 中
-            {x: 130 + (i * singleWidth), y: 300},  // 左
-            {x: 370 + (i * singleWidth), y: 300},  // 右
-            {x: 250 + (i * singleWidth), y: 180},  // 上
-            {x: 250 + (i * singleWidth), y: 420}   // 下
+            {x: 250 + (i * singleWidth), y: 300},  // 中(1)
+            {x: 130 + (i * singleWidth), y: 300},  // 左(2)
+            {x: 370 + (i * singleWidth), y: 300},  // 右(3)
+            {x: 250 + (i * singleWidth), y: 180},  // 上(4)
+            {x: 250 + (i * singleWidth), y: 420}   // 下(5)
         ]);
     }
     
