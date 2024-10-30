@@ -194,7 +194,7 @@ function saveAsImage() {
         ctx.textBaseline = 'top';
 
         // 文字換行處理
-        const maxWidth = 450 * hexagramCount; // 根據圖形數量調整最大寬度
+        const maxWidth = 450 * hexagramCount;
         const lineHeight = 50;
         const words = inputText.split('');
         let line = '';
@@ -215,27 +215,64 @@ function saveAsImage() {
         ctx.fillText(line, (singleWidth * hexagramCount) / 2, y);
     }
 
-    // 根據設備類型選擇適當的下載方法
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    // 改進的圖片保存功能
+    const fileName = inputText ? `${inputText}.png` : '象棋選擇.png';
+
+    // 判斷 iOS 設備
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    if (isIOS) {
+        // iOS 專用的保存方法
+        try {
+            canvas.toBlob((blob) => {
+                // 建立一個臨時的 URL
+                const url = window.URL.createObjectURL(blob);
+                
+                // 建立一個隱藏的 iframe
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+                
+                // 在 iframe 中開啟圖片
+                iframe.contentWindow.document.write(`<img src="${url}" />`);
+                iframe.contentWindow.document.close();
+                
+                // 提示用戶長按保存圖片
+                alert('請長按圖片並選擇"儲存圖片"來下載');
+                
+                // 清理資源
+                setTimeout(() => {
+                    document.body.removeChild(iframe);
+                    window.URL.revokeObjectURL(url);
+                }, 60000); // 給用戶 1 分鐘時間保存
+            }, 'image/png');
+        } catch (error) {
+            console.error('iOS 設備保存圖片時出錯:', error);
+            alert('請嘗試截圖來保存圖片');
+        }
+    } else if (/Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        // Android 和其他行動設備
         canvas.toBlob(function(blob) {
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = inputText ? `${inputText}.png` : '象棋選擇.png';
+            link.download = fileName;
             link.click();
             URL.revokeObjectURL(url);
         }, 'image/png');
     } else {
+        // 桌面瀏覽器
         try {
             const dataUrl = canvas.toDataURL('image/png');
             const link = document.createElement('a');
             link.href = dataUrl;
-            link.download = inputText ? `${inputText}.png` : '象棋選擇.png';
+            link.download = fileName;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         } catch (error) {
-            console.error('創建或下載圖片時出錯:', error);
+            console.error('保存圖片時出錯:', error);
+            alert('保存圖片時發生錯誤，請嘗試截圖');
         }
     }
 }
